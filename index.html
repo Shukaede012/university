@@ -13,7 +13,7 @@
         <nav>
             <div class="logo">
                 <img src="logo.jpg" class="logo-img" alt="Shu Kaede Logo" />
-                <span>Shu Tech University</span>
+                <span>Shu University</span>
             </div>
             <ul>
                 <li><a href="#home">Home</a></li>
@@ -33,9 +33,9 @@
     <section class="hero" id="home">
         <video class="hero-bg-video" src="background.mp4" autoplay loop muted playsinline></video>
         <div class="hero-content">
-            <h1>Welcome to Shu Tech University</h1>
+            <h1>Welcome to Shu University</h1>
             <p>Empowering the next generation of leaders, thinkers, and innovators.</p>
-            <a href="#about" class="btn">Learn More</a>
+            <a href="#about" class="btn" onclick="smoothScrollToAbout(event)">Learn More</a>
         </div>
     </section>
     <section id="about" class="about-section sp-section">
@@ -64,6 +64,8 @@
                 <img src="program1.jpg" alt="Program Slide" class="slide active" />
                 <img src="program2.jpg" alt="Program Slide" class="slide" />
                 <img src="program3.jpg" alt="Program Slide" class="slide" />
+                <img src="program4.jpg" alt="Program Slide" class="slide" />
+                <img src="program5.jpg" alt="Program Slide" class="slide" />
                 <button class="slider-btn prev">&#10094;</button>
                 <button class="slider-btn next">&#10095;</button>
             </div>
@@ -73,25 +75,33 @@
         <div class="container">
             <h1>Our Faculty</h1>
             <div class="faculty-list">
-                <div class="faculty-card">
-                    <h2>Ma'am Jessa Brogada</h2>
-                    <p><strong>Professor of BSIT</strong></p>
-                    <p>Specializes in Fundamentals of Database System</p>
+                <div class="faculty-container">
+                    <div class="faculty-card">
+                        <h2>Ma'am Jessa Brogada</h2>
+                        <p><strong>Professor of BSIT</strong></p>
+                        <p>Specializes in Fundamentals of Database System</p>
+                    </div>
                 </div>
-                <div class="faculty-card">
-                    <h2>Sir Laser Lleno</h2>
-                    <p><strong>Professor BSIT</strong></p>
-                    <p>Specializes in Information Assurance and Security 1.</p>
+                <div class="faculty-container">
+                    <div class="faculty-card">
+                        <h2>Sir Laser Lleno</h2>
+                        <p><strong>Professor of BSIT</strong></p>
+                        <p>Specializes in Information Assurance and Security 1.</p>
+                    </div>
                 </div>
-                <div class="faculty-card">
-                    <h2>Sir Jorge Lucero</h2>
-                    <p><strong>Professor of BSIT</strong></p>
-                    <p>Specializes in Project Management</p>
+                <div class="faculty-container">
+                    <div class="faculty-card">
+                        <h2>Sir Jorge Lucero</h2>
+                        <p><strong>Professor of BSIT</strong></p>
+                        <p>Specializes in Project Management</p>
+                    </div>
                 </div>
-                <div class="faculty-card">
-                    <h2>Ma'am Marimel Loya</h2>
-                    <p><strong>Professor of BSIT</strong></p>
-                    <p>Specializes in IT ELECTIVE 3 (Research).</p>
+                <div class="faculty-container">
+                    <div class="faculty-card">
+                        <h2>Ma'am Marimel Loya</h2>
+                        <p><strong>Professor of BSIT</strong></p>
+                        <p>Specializes in IT ELECTIVE 3 (Research).</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -138,6 +148,12 @@
             }
         });
     });
+
+    // Smooth scroll for Learn More button
+    function smoothScrollToAbout(e) {
+        e.preventDefault();
+        document.querySelector('#about').scrollIntoView({ behavior: 'smooth' });
+    }
     // Modern section transition on scroll
     const sections = document.querySelectorAll('.sp-section');
     const observer = new IntersectionObserver((entries) => {
@@ -154,34 +170,84 @@
     });
     // Transparent header on scroll
     const header = document.getElementById('main-header');
+    let lastScrollY = window.scrollY;
+    let isScrollingDown = false;
+
     window.addEventListener('scroll', function() {
-        if (window.scrollY > 30) {
+        const currentScrollY = window.scrollY;
+        isScrollingDown = currentScrollY > lastScrollY;
+        
+        if (currentScrollY > 30) {
             header.classList.add('transparent-header');
+            
+            // Mobile header fade effect
+            if (window.innerWidth <= 600) {
+                if (isScrollingDown) {
+                    header.style.transform = 'translateY(-100%)';
+                    header.style.opacity = '0';
+                } else {
+                    header.style.transform = 'translateY(0)';
+                    header.style.opacity = '1';
+                }
+            }
         } else {
             header.classList.remove('transparent-header');
+            header.style.transform = 'translateY(0)';
+            header.style.opacity = '1';
         }
+        
+        lastScrollY = currentScrollY;
     });
     // Simple slider for programs section
     const slides = document.querySelectorAll('.program-slider .slide');
     const prevBtn = document.querySelector('.program-slider .prev');
     const nextBtn = document.querySelector('.program-slider .next');
     let currentSlide = 0;
+    let slideInterval;
+
     function showSlide(idx) {
         slides.forEach((slide, i) => {
             slide.classList.toggle('active', i === idx);
         });
     }
+
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+    }
+
+    function startAutoSlide() {
+        slideInterval = setInterval(nextSlide, 4000); // Change slide every 4 seconds
+    }
+
+    function stopAutoSlide() {
+        clearInterval(slideInterval);
+    }
+
     if (prevBtn && nextBtn) {
         prevBtn.addEventListener('click', () => {
+            stopAutoSlide();
             currentSlide = (currentSlide - 1 + slides.length) % slides.length;
             showSlide(currentSlide);
+            startAutoSlide(); // Restart auto-slide
         });
         nextBtn.addEventListener('click', () => {
+            stopAutoSlide();
             currentSlide = (currentSlide + 1) % slides.length;
             showSlide(currentSlide);
+            startAutoSlide(); // Restart auto-slide
         });
+        
+        // Pause auto-slide on hover
+        const slider = document.querySelector('.program-slider');
+        if (slider) {
+            slider.addEventListener('mouseenter', stopAutoSlide);
+            slider.addEventListener('mouseleave', startAutoSlide);
+        }
     }
+
     showSlide(currentSlide);
+    startAutoSlide(); 
     </script>
 </body>
 </html>
